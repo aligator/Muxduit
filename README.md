@@ -26,10 +26,26 @@ flatpak run dev.aligator.muxduit
 ```
 
 Requires the Rust toolchain, [Trunk](https://trunkrs.dev/) and `ffmpeg` on
-`PATH` (except Flatpak, which bundles FFmpeg).
+`PATH` (except Flatpak and the Windows installer, which bundle FFmpeg).
 
-`MUXDUIT_FFMPEG` / `MUXDUIT_FFPROBE` override the binary paths if the tools
-are not on `PATH` (the Flatpak launcher sets these to the bundled build).
+FFmpeg is looked up in this order: `MUXDUIT_FFMPEG` / `MUXDUIT_FFPROBE`, then a
+binary sitting next to the executable, then `PATH`.
+
+## Windows
+
+The release workflow builds an NSIS installer (`*-setup.exe`) for x86_64 and
+arm64, with a static GPL FFmpeg bundled as a Tauri sidecar, so nothing else has
+to be installed. To build one locally:
+
+```sh
+# Drop ffmpeg.exe/ffprobe.exe named for the target triple next to the app, e.g.
+#   src-tauri/binaries/ffmpeg-x86_64-pc-windows-msvc.exe
+#   src-tauri/binaries/ffprobe-x86_64-pc-windows-msvc.exe
+cargo tauri-build --bundles nsis
+```
+
+Bundling a GPL FFmpeg build keeps the distributed installer under the GPL,
+which matches this project's license.
 
 ## License
 

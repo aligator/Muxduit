@@ -55,3 +55,68 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: muxduit-${{ steps.version.outputs.version }}.flatpak
+
+  windows:
+    name: build Windows installer (${{ matrix.arch }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x86_64
+            os: windows-latest
+            triple: x86_64-pc-windows-msvc
+            ffmpeg: win64
+          - arch: arm64
+            os: windows-11-arm
+            triple: aarch64-pc-windows-msvc
+            ffmpeg: winarm64
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            . -> target
+            src-tauri -> target
+
+      - name: Install Trunk and Tauri CLI
+        run: |
+          cargo install trunk --locked
+          cargo install tauri-cli --version "^2" --locked
+
+      # FFmpeg is not available on Windows, so a GPL static build is bundled as
+      # a Tauri sidecar and ends up next to muxduit.exe (see `tool_path`).
+      - name: Fetch FFmpeg sidecars
+        shell: pwsh
+        run: |
+          $name = "ffmpeg-n8.1-latest-${{ matrix.ffmpeg }}-gpl-8.1"
+          $url = "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/$name.zip"
+          Invoke-WebRequest -Uri $url -OutFile ffmpeg.zip
+          Expand-Archive -Path ffmpeg.zip -DestinationPath ffmpeg-dist
+          New-Item -ItemType Directory -Force -Path src-tauri/binaries | Out-Null
+          Copy-Item "ffmpeg-dist/$name/bin/ffmpeg.exe" "src-tauri/binaries/ffmpeg-${{ matrix.triple }}.exe"
+          Copy-Item "ffmpeg-dist/$name/bin/ffprobe.exe" "src-tauri/binaries/ffprobe-${{ matrix.triple }}.exe"
+
+      - name: Set version from tag
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref_name }}" -replace '^v', ''
+          Write-Host "Bundling version $version"
+          $path = "src-tauri/tauri.conf.json"
+          $config = Get-Content $path -Raw | ConvertFrom-Json
+          $config.version = $version
+          $config | ConvertTo-Json -Depth 32 | Set-Content $path
+
+      # NSIS only: the MSI bundler needs WiX, which has no arm64 story.
+      - name: Build Windows installer
+        run: cargo tauri-build --bundles nsis
+
+      - name: Upload installer to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: target/release/bundle/nsis/*-setup.exe

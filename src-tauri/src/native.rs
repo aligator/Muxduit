@@ -10,6 +10,10 @@ use tokio::io::{AsyncBufReadExt, AsyncReadExt, BufReader};
 use tokio::sync::{Mutex, Semaphore};
 use muxduit_frontend::core::{self, ConvertSettings, StreamKind, Track, TrackOutput};
 
+/// `CREATE_NO_WINDOW` — keeps spawned FFmpeg processes headless on Windows.
+#[cfg(windows)]
+const CREATE_NO_WINDOW: u32 = 0x0800_0000;
+
 #[derive(Clone)]
 pub struct NativeBackend {
     inner: Arc<Inner>,
@@ -61,10 +65,42 @@ pub struct EncodeResponse {
     output_path: Option<String>,
 }
 
+/// Locates an FFmpeg tool: an explicit env override wins (the Flatpak wrapper
+/// sets those), then a sidecar next to our own executable (how the Windows
+/// installer ships FFmpeg), and finally the bare name so `PATH` is used.
+fn tool_path(env_key: &str, name: &str) -> String {
+    if let Ok(value) = std::env::var(env_key) {
+        return value;
+    }
+    let file_name = if cfg!(windows) {
+        format!("{name}.exe")
+    } else {
+        name.to_owned()
+    };
+    let sidecar = std::env::current_exe()
+        .ok()
+        .and_then(|exe| exe.parent().map(|dir| dir.join(&file_name)))
+        .filter(|path| path.is_file());
+    match sidecar {
+        Some(path) => path.to_string_lossy().into_owned(),
+        None => name.to_owned(),
+    }
+}
+
+/// Spawns FFmpeg without the console window Windows would otherwise flash up
+/// for every probe and encode.
+fn command(program: &str) -> tokio::process::Command {
+    #[allow(unused_mut)]
+    let mut command = tokio::process::Command::new(program);
+    #[cfg(windows)]
+    command.creation_flags(CREATE_NO_WINDOW);
+    command
+}
+
 impl NativeBackend {
     pub async fn new() -> Result<Self, String> {
-        let ffmpeg = std::env::var("MUXDUIT_FFMPEG").unwrap_or_else(|_| "ffmpeg".into());
-        let ffprobe = std::env::var("MUXDUIT_FFPROBE").unwrap_or_else(|_| "ffprobe".into());
+        let ffmpeg = tool_path("MUXDUIT_FFMPEG", "ffmpeg");
+        let ffprobe = tool_path("MUXDUIT_FFPROBE", "ffprobe");
         let encoders = probe_encoders(&ffmpeg).await?;
         let encoder_names = encoders.iter().map(|encoder| encoder.name.clone()).collect();
         eprintln!("muxduit: detected {} encoders", encoders.len());
@@ -193,7 +229,7 @@ pub async fn encode_native(
         .await
         .map_err(|_| "scheduler closed".to_owned())?;
 
-    let mut child = tokio::process::Command::new(&state.inner.ffmpeg)
+    let mut child = command(&state.inner.ffmpeg)
         .args(&args)
         .current_dir(&output_dir)
         .stdin(std::process::Stdio::null())
@@ -277,7 +313,7 @@ fn emit_progress(app: &AppHandle, job_id: &str, fraction: f64) {
 }
 
 async fn probe_encoders(ffmpeg: &str) -> Result<Vec<EncoderInfo>, String> {
-    let out = tokio::process::Command::new(ffmpeg)
+    let out = command(ffmpeg)
         .arg("-encoders")
         .stdin(std::process::Stdio::null())
         .output()
@@ -320,7 +356,7 @@ async fn probe_encoders(ffmpeg: &str) -> Result<Vec<EncoderInfo>, String> {
 }
 
 async fn probe_input(ffprobe: &str, input: &PathBuf) -> Result<(Vec<Track>, usize, Option<Value>), String> {
-    let out = tokio::process::Command::new(ffprobe)
+    let out = command(ffprobe)
         .args(["-v", "error", "-show_format", "-show_streams", "-of", "json"])
         .arg(input)
         .stdin(std::process::Stdio::null())
