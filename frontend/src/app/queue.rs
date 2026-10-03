@@ -18,6 +18,7 @@ use super::bridge::{
 };
 use super::ingest::JobIds;
 use super::state::AppCtx;
+use super::storage::{ls_get, ls_set};
 use super::types::{EncodeItem, EncodeResponse, EncodeStatus};
 use super::widgets::icon;
 
@@ -29,20 +30,6 @@ type Progress = Rc<RefCell<HashMap<String, f64>>>;
 // choice survive reloads/restarts — no re-picking on every run.
 const LS_OUTPUT_DIR: &str = "muxduit_output_dir";
 const LS_OVERWRITE: &str = "muxduit_overwrite";
-
-fn local_storage() -> Option<web_sys::Storage> {
-    web_sys::window().and_then(|window| window.local_storage().ok().flatten())
-}
-
-fn ls_get(key: &str) -> Option<String> {
-    local_storage().and_then(|store| store.get_item(key).ok().flatten())
-}
-
-fn ls_set(key: &str, value: &str) {
-    if let Some(store) = local_storage() {
-        let _ = store.set_item(key, value);
-    }
-}
 
 #[derive(Properties, PartialEq)]
 pub(crate) struct QueueTabProps {

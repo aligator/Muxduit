@@ -10,6 +10,7 @@
 //! - [`widgets`] — small reusable form fields and presentational helpers.
 //! - [`ingest`] — probing native file paths with the backend FFmpeg.
 //! - [`side_rail`], [`command_preview`] — the rail and preview pane.
+//! - [`storage`], [`theme`] — localStorage helpers and the light/dark toggle.
 //! - [`media`], [`convert`], [`queue`] — the three tab views.
 
 mod bridge;
@@ -20,6 +21,8 @@ mod media;
 mod queue;
 mod side_rail;
 mod state;
+mod storage;
+mod theme;
 mod types;
 mod widgets;
 
@@ -40,6 +43,7 @@ use media::MediaTab;
 use queue::QueueTab;
 use side_rail::SideRail;
 use state::AppCtx;
+use theme::ThemeToggle;
 use types::{ApiEncoder, BrowserEncoder, Tab, kind_from_str};
 
 #[function_component(App)]
@@ -160,6 +164,7 @@ pub fn app() -> Html {
                             <p>{tab.subtitle()}</p>
                         </div>
                         <div class="topbar-actions">
+                            <ThemeToggle />
                             <button
                                 class={classes!("icon-button", "subtle", "material-symbols-rounded", (*show_command_preview).then_some("active"))}
                                 title={if *show_command_preview { "Hide command preview" } else { "Show command preview" }}
