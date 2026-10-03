@@ -1,3 +1,8 @@
 [alias]
 tauri-dev = "run -p xtask -- tauri-dev"
 tauri-build = "run -p xtask -- tauri-build"
+
+# Link the MSVC runtime statically so the installed app does not depend on the
+# VC++ redistributable being present (VCRUNTIME140.dll).
+[target.'cfg(all(windows, target_env = "msvc"))']
+rustflags = ["-C", "target-feature=+crt-static"]

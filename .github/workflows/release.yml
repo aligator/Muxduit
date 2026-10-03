@@ -89,6 +89,18 @@ jobs:
           cargo install trunk --locked
           cargo install tauri-cli --version "^2" --locked
 
+      # Trunk downloads a prebuilt wasm-bindgen, and upstream ships no
+      # windows-aarch64 archive. Building it from source puts a matching
+      # version on PATH, which Trunk prefers over downloading.
+      - name: Install wasm-bindgen CLI from source
+        if: matrix.arch == 'arm64'
+        shell: pwsh
+        run: |
+          $lock = Get-Content Cargo.lock -Raw
+          $version = ([regex]'name = "wasm-bindgen"\r?\nversion = "([^"]+)"').Match($lock).Groups[1].Value
+          Write-Host "Building wasm-bindgen-cli $version"
+          cargo install wasm-bindgen-cli --version $version --locked
+
       # FFmpeg is not available on Windows, so a GPL static build is bundled as
       # a Tauri sidecar and ends up next to muxduit.exe (see `tool_path`).
       - name: Fetch FFmpeg sidecars

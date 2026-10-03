@@ -44,6 +44,14 @@ to be installed. To build one locally:
 cargo tauri-build --bundles nsis
 ```
 
+For local testing, `scripts/build-windows.sh` cross-builds from Linux with
+[cargo-xwin](https://github.com/rust-cross/cargo-xwin) (it fetches the FFmpeg
+sidecars itself) and packs a portable zip. Pass `--installer` to build the NSIS
+installer instead — that needs `makensis` on `PATH`.
+
+The MSVC runtime is linked statically (see `.cargo/config.toml`), so the app
+does not depend on the VC++ redistributable.
+
 Bundling a GPL FFmpeg build keeps the distributed installer under the GPL,
 which matches this project's license.
 
