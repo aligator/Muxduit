@@ -22,13 +22,13 @@ use super::types::{EncodeItem, EncodeResponse, EncodeStatus};
 use super::widgets::icon;
 
 /// Shared per-job encode progress (job id → fraction 0..1), updated by the
-/// desktop `webcoder-encode-progress` event and read by the result rows.
+/// desktop `muxduit-encode-progress` event and read by the result rows.
 type Progress = Rc<RefCell<HashMap<String, f64>>>;
 
 // Desktop settings persisted in localStorage so the output folder and overwrite
 // choice survive reloads/restarts — no re-picking on every run.
-const LS_OUTPUT_DIR: &str = "webcoder_output_dir";
-const LS_OVERWRITE: &str = "webcoder_overwrite";
+const LS_OUTPUT_DIR: &str = "muxduit_output_dir";
+const LS_OVERWRITE: &str = "muxduit_overwrite";
 
 fn local_storage() -> Option<web_sys::Storage> {
     web_sys::window().and_then(|window| window.local_storage().ok().flatten())

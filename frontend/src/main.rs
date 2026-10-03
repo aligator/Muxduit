@@ -1,9 +1,9 @@
 #[cfg(target_arch = "wasm32")]
 fn main() {
-    yew::Renderer::<webcoder_frontend::app::App>::new().render();
+    yew::Renderer::<muxduit_frontend::app::App>::new().render();
 }
 
 #[cfg(not(target_arch = "wasm32"))]
 fn main() {
-    println!("Webcoder WASM is a browser app. Run it with `trunk serve`.");
+    println!("Muxduit WASM is a browser app. Run it with `trunk serve`.");
 }

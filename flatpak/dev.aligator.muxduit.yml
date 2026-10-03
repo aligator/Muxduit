@@ -1,8 +1,8 @@
-app-id: dev.webcoder.app
+app-id: dev.aligator.muxduit
 runtime: org.gnome.Platform
 runtime-version: "50"
 sdk: org.gnome.Sdk
-command: webcoder-flatpak
+command: muxduit-flatpak
 
 finish-args:
   - --share=ipc
@@ -16,9 +16,9 @@ build-options:
   build-args:
     - --share=network
   env:
-    CARGO_HOME: /run/build/webcoder/cargo
-    RUSTUP_HOME: /run/build/webcoder/rustup
-    PATH: /run/build/webcoder/cargo/bin:/usr/bin:/bin
+    CARGO_HOME: /run/build/muxduit/cargo
+    RUSTUP_HOME: /run/build/muxduit/rustup
+    PATH: /run/build/muxduit/cargo/bin:/usr/bin:/bin
 
 modules:
   # FFmpeg and its codec libraries are built from source and bundled, so the
@@ -92,19 +92,22 @@ modules:
         url: https://ffmpeg.org/releases/ffmpeg-7.1.tar.xz
         sha256: 40973d44970dbc83ef302b0609f2e74982be2d85916dd2ee7472d30678a7abe6
 
-  - name: webcoder
+  - name: muxduit
     buildsystem: simple
     build-commands:
       - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain stable --target wasm32-unknown-unknown
       - cargo install trunk --locked
       - trunk build
-      - cargo build --manifest-path src-tauri/Cargo.toml --release --locked --bin webcoder
-      - install -Dm755 target/release/webcoder /app/bin/webcoder
-      - install -Dm755 flatpak/webcoder-flatpak /app/bin/webcoder-flatpak
-      - install -Dm644 flatpak/dev.webcoder.app.desktop /app/share/applications/dev.webcoder.app.desktop
-      - install -Dm644 flatpak/dev.webcoder.app.metainfo.xml /app/share/metainfo/dev.webcoder.app.metainfo.xml
-      - install -Dm644 src-tauri/icons/icon.png /app/share/icons/hicolor/32x32/apps/dev.webcoder.app.png
-      - install -Dm644 src-tauri/icons/128x128.png /app/share/icons/hicolor/128x128/apps/dev.webcoder.app.png
+      - cargo build --manifest-path src-tauri/Cargo.toml --release --locked --bin muxduit
+      - install -Dm755 target/release/muxduit /app/bin/muxduit
+      - install -Dm755 flatpak/muxduit-flatpak /app/bin/muxduit-flatpak
+      - install -Dm644 flatpak/dev.aligator.muxduit.desktop /app/share/applications/dev.aligator.muxduit.desktop
+      - install -Dm644 flatpak/dev.aligator.muxduit.metainfo.xml /app/share/metainfo/dev.aligator.muxduit.metainfo.xml
+      - install -Dm644 src-tauri/icons/icon.png /app/share/icons/hicolor/32x32/apps/dev.aligator.muxduit.png
+      - install -Dm644 src-tauri/icons/128x128.png /app/share/icons/hicolor/128x128/apps/dev.aligator.muxduit.png
+      - install -Dm644 src-tauri/icons/256x256.png /app/share/icons/hicolor/256x256/apps/dev.aligator.muxduit.png
+      - install -Dm644 src-tauri/icons/512x512.png /app/share/icons/hicolor/512x512/apps/dev.aligator.muxduit.png
+      - install -Dm644 src-tauri/icons/icon.svg /app/share/icons/hicolor/scalable/apps/dev.aligator.muxduit.svg
     sources:
       - type: dir
         path: ..

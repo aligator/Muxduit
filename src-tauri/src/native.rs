@@ -8,7 +8,7 @@ use serde_json::Value;
 use tauri::{AppHandle, Emitter, State};
 use tokio::io::{AsyncBufReadExt, AsyncReadExt, BufReader};
 use tokio::sync::{Mutex, Semaphore};
-use webcoder_frontend::core::{self, ConvertSettings, StreamKind, Track, TrackOutput};
+use muxduit_frontend::core::{self, ConvertSettings, StreamKind, Track, TrackOutput};
 
 #[derive(Clone)]
 pub struct NativeBackend {
@@ -63,11 +63,11 @@ pub struct EncodeResponse {
 
 impl NativeBackend {
     pub async fn new() -> Result<Self, String> {
-        let ffmpeg = std::env::var("WEBCODER_FFMPEG").unwrap_or_else(|_| "ffmpeg".into());
-        let ffprobe = std::env::var("WEBCODER_FFPROBE").unwrap_or_else(|_| "ffprobe".into());
+        let ffmpeg = std::env::var("MUXDUIT_FFMPEG").unwrap_or_else(|_| "ffmpeg".into());
+        let ffprobe = std::env::var("MUXDUIT_FFPROBE").unwrap_or_else(|_| "ffprobe".into());
         let encoders = probe_encoders(&ffmpeg).await?;
         let encoder_names = encoders.iter().map(|encoder| encoder.name.clone()).collect();
-        eprintln!("webcoder: detected {} encoders", encoders.len());
+        eprintln!("muxduit: detected {} encoders", encoders.len());
         Ok(Self {
             inner: Arc::new(Inner {
                 ffmpeg,
@@ -268,7 +268,7 @@ async fn pump_progress(
 
 fn emit_progress(app: &AppHandle, job_id: &str, fraction: f64) {
     let _ = app.emit(
-        "webcoder-encode-progress",
+        "muxduit-encode-progress",
         ProgressPayload {
             job_id: job_id.to_owned(),
             fraction,

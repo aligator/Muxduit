@@ -23,7 +23,7 @@ pub fn run() {
 
             let window =
                 WebviewWindowBuilder::new(&handle, "main", WebviewUrl::App("index.html".into()))
-                    .title("Webcoder")
+                    .title("Muxduit")
                     .inner_size(1280.0, 900.0)
                     .build()?;
 
@@ -37,7 +37,7 @@ pub fn run() {
                         .iter()
                         .map(|path| path.to_string_lossy().into_owned())
                         .collect();
-                    let _ = emitter.emit("webcoder-files-dropped", paths);
+                    let _ = emitter.emit("muxduit-files-dropped", paths);
                 }
             });
 

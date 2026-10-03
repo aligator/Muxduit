@@ -1,3 +1,3 @@
 fn main() {
-    webcoder_desktop::run();
+    muxduit_desktop::run();
 }

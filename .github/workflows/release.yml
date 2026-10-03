@@ -31,7 +31,7 @@ jobs:
           from pathlib import Path
 
           version = sys.argv[1]
-          path = Path("flatpak/dev.webcoder.app.metainfo.xml")
+          path = Path("flatpak/dev.aligator.muxduit.metainfo.xml")
           tree = ET.parse(path)
           root = tree.getroot()
           releases = root.find("releases")
@@ -46,12 +46,12 @@ jobs:
 
       - uses: flatpak/flatpak-github-actions/flatpak-builder@v6
         with:
-          bundle: webcoder-${{ steps.version.outputs.version }}.flatpak
-          manifest-path: flatpak/dev.webcoder.app.yml
+          bundle: muxduit-${{ steps.version.outputs.version }}.flatpak
+          manifest-path: flatpak/dev.aligator.muxduit.yml
           cache-key: flatpak-builder-${{ github.sha }}
           verbose: true
 
       - name: Upload Flatpak bundle to release
         uses: softprops/action-gh-release@v2
         with:
-          files: webcoder-${{ steps.version.outputs.version }}.flatpak
+          files: muxduit-${{ steps.version.outputs.version }}.flatpak

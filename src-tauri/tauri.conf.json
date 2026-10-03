@@ -1,9 +1,9 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Webcoder",
+  "productName": "Muxduit",
   "version": "0.1.0",
-  "identifier": "dev.webcoder.app",
-  "mainBinaryName": "webcoder",
+  "identifier": "dev.aligator.muxduit",
+  "mainBinaryName": "muxduit",
   "build": {
     "beforeDevCommand": "trunk build",
     "beforeBuildCommand": "trunk build",
@@ -21,7 +21,9 @@
     "targets": "all",
     "icon": [
       "icons/icon.png",
-      "icons/128x128.png"
+      "icons/128x128.png",
+      "icons/256x256.png",
+      "icons/512x512.png"
     ],
     "resources": {
       "../dist": "dist"

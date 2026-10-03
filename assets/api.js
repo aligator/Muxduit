@@ -17,7 +17,7 @@ function tauriInvoke() {
 export function listenNativeDrop(callback) {
   const event = window.__TAURI__ && window.__TAURI__.event;
   if (!event || !event.listen) return;
-  event.listen("webcoder-files-dropped", (e) => {
+  event.listen("muxduit-files-dropped", (e) => {
     const paths = e && e.payload;
     if (Array.isArray(paths) && paths.length) callback(paths);
   });
@@ -65,7 +65,7 @@ export async function pickOutputDir() {
 export function listenEncodeProgress(callback) {
   const event = window.__TAURI__ && window.__TAURI__.event;
   if (!event || !event.listen) return;
-  event.listen("webcoder-encode-progress", (e) => {
+  event.listen("muxduit-encode-progress", (e) => {
     const payload = e && e.payload;
     if (payload && typeof payload.job_id === "string") {
       callback(payload.job_id, payload.fraction || 0);

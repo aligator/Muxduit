@@ -16,9 +16,9 @@ pub(crate) fn side_rail(props: &SideRailProps) -> Html {
     html! {
         <aside class="side-rail">
             <div class="brand">
-                <span class="brand-mark material-symbols-rounded">{"movie_filter"}</span>
+                <img class="brand-logo" src="icon.svg" alt="Muxduit" />
                 <div>
-                    <strong>{"Webcoder"}</strong>
+                    <strong>{"Muxduit"}</strong>
                     <small>{"FFmpeg Transcoder"}</small>
                 </div>
             </div>

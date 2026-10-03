@@ -1,8 +1,8 @@
 [Desktop Entry]
 Type=Application
-Name=Webcoder
+Name=Muxduit
 Comment=Local FFmpeg transcoder frontend
-Exec=webcoder-flatpak
-Icon=dev.webcoder.app
+Exec=muxduit-flatpak
+Icon=dev.aligator.muxduit
 Terminal=false
 Categories=AudioVideo;Video;Utility;

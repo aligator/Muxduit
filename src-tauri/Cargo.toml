@@ -1,10 +1,10 @@
 [package]
-name = "webcoder-desktop"
+name = "muxduit-desktop"
 version = "0.1.0"
 edition = "2024"
 
 [[bin]]
-name = "webcoder"
+name = "muxduit"
 path = "src/main.rs"
 
 [build-dependencies]
@@ -17,4 +17,4 @@ tauri = { version = "2", features = [] }
 tauri-plugin-dialog = "2"
 tokio = { version = "1", features = ["rt-multi-thread", "process", "fs", "io-util", "time", "sync"] }
 uuid = { version = "1", features = ["v4"] }
-webcoder-frontend = { path = ".." }
+muxduit-frontend = { path = ".." }

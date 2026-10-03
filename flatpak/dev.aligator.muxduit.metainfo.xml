@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-  <id>dev.webcoder.app</id>
-  <name>Webcoder</name>
+  <id>dev.aligator.muxduit</id>
+  <name>Muxduit</name>
   <summary>Local FFmpeg transcoder frontend</summary>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0-or-later</project_license>
   <description>
-    <p>Webcoder is a desktop media transcoder UI backed by FFmpeg.</p>
+    <p>Muxduit is a desktop media transcoder UI backed by FFmpeg.</p>
   </description>
-  <launchable type="desktop-id">dev.webcoder.app.desktop</launchable>
+  <launchable type="desktop-id">dev.aligator.muxduit.desktop</launchable>
   <provides>
-    <binary>webcoder-flatpak</binary>
+    <binary>muxduit-flatpak</binary>
   </provides>
 </component>
